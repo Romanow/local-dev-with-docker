@@ -1,0 +1,53 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./docker/postgres/:/docker-entrypoint-initdb.d/
+
+  person-service:
+    build: modules/person-service
+    image: romanowalex/person-service:v1.0
+    container_name: person-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/manage/health" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  person-frontend:
+    build: modules/person-frontend
+    image: romanowalex/person-frontend:v1.0
+    container_name: person-frontend
+    ports:
+      - "8880:80"
+    healthcheck:
+      test: "curl --fail http://localhost || exit 1"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      person-service:
+        condition: service_healthy
+
+volumes:
+  postgres:

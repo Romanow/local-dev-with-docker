@@ -1,0 +1,8 @@
+[submodule "modules/person-service"]
+	path = modules/person-service
+	url = https://github.com/Romanow/person-service.git
+	branch = master
+[submodule "modules/person-frontend"]
+	path = modules/person-frontend
+	url = https://github.com/Romanow/person-frontend.git
+	branch = master

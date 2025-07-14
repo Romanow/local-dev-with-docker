@@ -1,0 +1,8 @@
+*.iml
+*.log
+*.iws
+*.ipr
+
+.DS_Store
+.idea/
+logs/*.log

@@ -1,0 +1,61 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+    path:
+      - .github/**
+      - .gitmodules
+      - build.sh
+      - docker-compose.yml
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Update submodules
+        run: git submodule update --init --remote
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: "corretto"
+          java-version: "17"
+          cache: "gradle"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate styles
+        uses: pre-commit/action@v3.0.0
+
+      - name: Build images
+        timeout-minutes: 5
+        run: |
+          ./build.sh
+          docker compose build
+
+      - name: Run containers
+        id: run-containers
+        timeout-minutes: 10
+        run: docker compose up -d --wait
+
+      - name: Print logs
+        if: ${{ failure() && steps.run-containers.outcome != 'success' }}
+        run: |
+          docker compose logs
+
+      - name: Run API Tests
+        uses: matt-ball/newman-action@master
+        with:
+          collection: tests/collection.json
+          environment: tests/local.json
+          delayRequest: 100
+          reporters: '["cli"]'
+
+      - name: Stop containers
+        if: ${{ always() }}
+        continue-on-error: true
+        run: docker compose down -v
