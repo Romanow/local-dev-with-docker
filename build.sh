@@ -48,9 +48,6 @@ services="$*"
       ;;
     maven)
       "$maven" clean package -p "$dir" >logs/"$name".log 2>&1 &
-      pid=$!
-      printf "=== Building Gradle module '%s' with PID %d ===\n" "$name" "$pid"
-      process[$name]=$pid
       ;;
     npm)
       (cd "$dir" && npm install && npm run build) >logs/"$name".log 2>&1 &

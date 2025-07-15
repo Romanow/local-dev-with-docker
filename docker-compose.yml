@@ -18,13 +18,20 @@ services:
       - ./docker/postgres/:/docker-entrypoint-initdb.d/
 
   person-service:
-    build: modules/person-service
+    build:
+      context: modules/person-service
+      args:
+        REMOTE_DEBUG: true
     image: romanowalex/person-service:v1.0
     container_name: person-service
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      DATABASE_NAME: persons
+      DATABASE_USER: program
+      DATABASE_PASSWORD: test
     ports:
       - "8080:8080"
+      - "5005:5005"
     healthcheck:
       test: [ "CMD", "curl", "--silent", "--fail", "http://localhost:8080/manage/health" ]
       interval: 10s

@@ -1,6 +1,6 @@
 [![CI](https://github.com/Romanow/local-dev-with-docker/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Romanow/local-dev-with-docker/actions/workflows/build.yml)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
-[![License](https://img.shields.io/github/license/Romanow/local-dev-with-docker)](https://github.com/Romanow/local-dev-with-docker/blob/main/LICENSE)
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
 # Использование Docker Compose для разработки и тестирования
 
@@ -48,5 +48,8 @@ $ docker compose build
 $ docker compose up -d --wait
 
 # запускаем коллекцию для проверки
-$ newman run --delay-request 100 -e local.json collection.json
+$ newman run --delay-request 100 -e tests/local.json tests/collection.json
+
+# остановка сервисов
+$ docker compose down -v
 ```
